@@ -34,7 +34,6 @@ class Dataloader():
         # augmentation, normalize
         train_transforms =  transforms.Compose([
                                             transforms.Resize(self.image_size),
-                                            transforms.RandomPosterize(bits=2),
                                             transforms.ToTensor(),
                                             transforms.Normalize(mean = means, std = stds),
                                                 ])
