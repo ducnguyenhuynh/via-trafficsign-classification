@@ -128,7 +128,7 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-via-tfsclassification/
-via-tfsclassification.zip
+dataset/
+dataset.zip
 
 resnet/*.pt
