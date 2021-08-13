@@ -134,3 +134,7 @@ resnet/pretrained/*.pt
 resnet/*.onnx
 lenet/*.pt
 lenet/*.onnx
+
+
+/inference-onnx/build
+/inference-onnx/models/*.onnx

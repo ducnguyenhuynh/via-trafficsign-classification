@@ -28,41 +28,42 @@ std::vector<std::string> readLabels(std::string& labelFilepath) {
     return labels;
 }
 
-std::vector<float> sigmoid(const std::vector<float>& m1) {
-    const unsigned long vectorSize = m1.size();
-    std::vector<float> output(vectorSize);
-    for (unsigned i = 0; i != vectorSize; ++i) {
-        output[i] = 1 / (1 + exp(-m1[i]));
-    }
-    return output;
+std::vector<float> softmax(const std::vector<float> &input) {
+    std::vector<float> result(input.size());
+    // Calculate sum of e^
+    float sum = 0;
+    for (size_t i = 0; i < input.size(); i++)
+        sum += exp(input[i]);
+
+    // Softmax
+    for (size_t i = 0; i < input.size(); i++)
+        result[i] = exp(input[i]) / sum;
+    return result;
 }
 
 int main(int argc, char* argv[]) {
+
+    if (argc != 4) {
+        std::cerr << "Usage: ./traffic_sign_classifier <model-path> <label-file> <image-path>" << std::endl;
+        std::cerr << "   Eg: ./traffic_sign_classifier ../models/resnet18.onnx ../models/classes.txt ../sample_data/00003.jpg" << std::endl;
+        exit(1);
+    }
+    
+    std::string modelFilepath{argv[1]};
+    std::string labelFilepath{argv[2]};
+    std::string imageFilepath{argv[3]};
+
     int inpWidth = 128;
     int inpHeight = 128;
-    std::string modelFilepath{
-        "/home/huynhduc/Desktop/via-trafficsign-classification/resnet/"
-        "resnet18.onnx"};
-    std::string labelFilepath{
-        "/home/huynhduc/Desktop/via-trafficsign-classification/"
-        "dataset/classes.txt"};
-
     std::vector<std::string> labels{readLabels(labelFilepath)};
-    std::string imageFilepath{argv[1]};
-
-    
 
     cv::Mat image = cv::imread(imageFilepath, cv::ImreadModes::IMREAD_COLOR);
-
     cv::Mat resizedImageRGB, resizedImage, preprocessedImage;
-
     cv::cvtColor(image, resizedImageRGB, cv::ColorConversionCodes::COLOR_BGR2RGB);
-
     resizedImageRGB.convertTo(resizedImage, CV_32F, 1.0 / 255);
 
     cv::Mat channels[3];
     cv::split(resizedImage, channels);
-
 
     cv::Scalar mean{0.4151, 0.3771, 0.4568};
     cv::Scalar std{0.2011, 0.2108, 0.1896};
@@ -78,19 +79,25 @@ int main(int argc, char* argv[]) {
     cv::dnn::Net net = cv::dnn::readNet(modelFilepath);
     net.setInput(preprocessedImage);
     cv::Mat prob = net.forward();
-    std::cout << prob << std::endl;
+    std::cout << "Raw output: " << prob << std::endl;
 
-    // Apply sigmoid
+    // Apply softmax to get prob
     cv::Mat probReshaped = prob.reshape(1, prob.total() * prob.channels());
     std::vector<float> probVec =
         probReshaped.isContinuous() ? probReshaped : probReshaped.clone();
-    std::vector<float> probNormalized = sigmoid(probVec);
+    std::vector<float> probNormalized = softmax(probVec);
+    std::cout << "Sofmax Prob: [";
+    for (size_t i = 0; i < probNormalized.size(); i++) {
+        std::cout << probNormalized[i];
+        if (i != probNormalized.size() - 1) std::cout << ", ";
+    }
+    std::cout << "]" << std::endl;
 
     cv::Point classIdPoint;
     double confidence;
     minMaxLoc(prob.reshape(1, 1), 0, &confidence, 0, &classIdPoint);
     int classId = classIdPoint.x;
-    std::cout << " ID " << classId << " - " << labels[classId] << " confidence "
-                << confidence << std::endl;
+    std::cout << "Result: classID " << classId << " - [" << labels[classId] << "] - confidence "
+                << probNormalized[classId] << std::endl;
 
 }
