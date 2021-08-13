@@ -10,7 +10,7 @@ from models import *
 from utils import *
 
 
-dataloader = Dataloader("../via-tfsclassification", 128)
+dataloader = Dataloader("../dataset", 128)
 
 train_data, valid_data, test_data =  dataloader.get_dataset()
 
@@ -83,6 +83,7 @@ def train(model, iterator, optimizer, criterion, scheduler, device):
         
         x = x.to(device)
         y = y.to(device)
+        print(x.shape)
         
         optimizer.zero_grad()
                 
