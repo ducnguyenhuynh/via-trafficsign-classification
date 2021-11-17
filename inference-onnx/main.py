@@ -3,6 +3,11 @@ import numpy as np
 import argparse
 
 
+'''
+example: python main.py --model-path models/resnet18_64x64.onnx --label-file models/classes.txt \
+         --image-path ../dataset/test/1/00114.jpg
+
+'''
 parser = argparse.ArgumentParser(description='Process some integers.')
 parser.add_argument('--model-path', default = "models/lenet.onnx", required = True)
 parser.add_argument('--label-file', default = "models/classes.txt", required = True)
