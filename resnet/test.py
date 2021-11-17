@@ -84,7 +84,7 @@ criterion = nn.CrossEntropyLoss()
 model = model.to(device)
 criterion = criterion.to(device)
 
-model.load_state_dict(torch.load('pretrained/tut5-model.pt'))
+model.load_state_dict(torch.load('tut5-model.pt'))
 
 test_loss, test_acc_1, test_acc_5 = evaluate(model, test_iterator, criterion, device)
 

@@ -4,7 +4,7 @@ from dataloader import Dataloader
 
 
 model = ResNet(resnet18_config, 7).to('cuda')
-model.load_state_dict(torch.load("pretrained/tut5-model.pt"))
+model.load_state_dict(torch.load("tut5-model.pt"))
 print(model)
 
 

@@ -130,7 +130,7 @@ dmypy.json
 
 dataset/
 dataset.zip
-resnet/pretrained/*.pt
+resnet/*.pt
 resnet/*.onnx
 lenet/*.pt
 lenet/*.onnx
